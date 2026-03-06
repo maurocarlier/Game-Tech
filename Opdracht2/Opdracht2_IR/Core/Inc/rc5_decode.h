@@ -10,7 +10,7 @@
 #ifndef __RC5_DECODE_H
 #define __RC5_DECODE_H
 
-#include <stdint.h>
+#include "main.h"
 
 /* StatusYesOrNo type definitie */
 typedef enum

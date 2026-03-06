@@ -1,0 +1,8 @@
+../Core/Src/rc5_decode.c:77:6:RC5_ResetPacket	1
+../Core/Src/rc5_decode.c:97:6:RC5_Decode	3
+../Core/Src/rc5_decode.c:125:6:RC5_DataSampling	5
+../Core/Src/rc5_decode.c:174:16:RC5_GetPulseLength	5
+../Core/Src/rc5_decode.c:190:13:RC5_modifyLastBit	3
+../Core/Src/rc5_decode.c:210:13:RC5_WriteBit	4
+../Core/Src/rc5_decode.c:249:6:HAL_TIM_IC_CaptureCallback	4
+../Core/Src/rc5_decode.c:273:6:HAL_TIM_PeriodElapsedCallback	2

@@ -1,0 +1,27 @@
+--cpu=Cortex-M4.fp.sp --branchpatch=sdcomp-29491-629360
+"ir-transmitter\startup_stm32l432xx.o"
+"ir-transmitter\main.o"
+"ir-transmitter\stm32l4xx_it.o"
+"ir-transmitter\stm32l4xx_hal_msp.o"
+"ir-transmitter\stm32l4xx_hal_tim.o"
+"ir-transmitter\stm32l4xx_hal_tim_ex.o"
+"ir-transmitter\stm32l4xx_hal.o"
+"ir-transmitter\stm32l4xx_hal_rcc.o"
+"ir-transmitter\stm32l4xx_hal_rcc_ex.o"
+"ir-transmitter\stm32l4xx_hal_flash.o"
+"ir-transmitter\stm32l4xx_hal_flash_ex.o"
+"ir-transmitter\stm32l4xx_hal_flash_ramfunc.o"
+"ir-transmitter\stm32l4xx_hal_gpio.o"
+"ir-transmitter\stm32l4xx_hal_i2c.o"
+"ir-transmitter\stm32l4xx_hal_i2c_ex.o"
+"ir-transmitter\stm32l4xx_hal_dma.o"
+"ir-transmitter\stm32l4xx_hal_dma_ex.o"
+"ir-transmitter\stm32l4xx_hal_pwr.o"
+"ir-transmitter\stm32l4xx_hal_pwr_ex.o"
+"ir-transmitter\stm32l4xx_hal_cortex.o"
+"ir-transmitter\stm32l4xx_hal_exti.o"
+"ir-transmitter\system_stm32l4xx.o"
+--strict --scatter "IR-Transmitter\IR-Transmitter.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "IR-Transmitter.map" -o IR-Transmitter\IR-Transmitter.axf

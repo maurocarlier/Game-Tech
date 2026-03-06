@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "rc5_decode.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,7 +57,12 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+/* Stuur printf() output naar USART2 (zichtbaar in PuTTY) */
+int __io_putchar(int ch)
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 100);
+  return ch;
+}
 /* USER CODE END 0 */
 
 /**
@@ -91,13 +97,27 @@ int main(void)
   MX_TIM2_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  setvbuf(stdout, NULL, _IONBF, 0);             /* Schakel buffering uit */
+  RC5_ResetPacket();                            /* RC5 pakket initialiseren */
+  __HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);  /* Timeout interrupt aanzetten */
+  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);  /* CH1: dalende flank */
+  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);  /* CH2: stijgende flank */
+  printf("IR Receiver gestart\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    /* Controleer of een volledig RC5 frame ontvangen werd */
+    if (RC5FrameReceived == YES)
+    {
+      RC5_Decode(&RC5_FRAME);
+      printf("[RC5] Adres: 0x%02X | Commando: 0x%02X | Toggle: %d\r\n",
+             RC5_FRAME.Address,
+             RC5_FRAME.Command,
+             RC5_FRAME.ToggleBit);
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
