@@ -99,6 +99,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   setvbuf(stdout, NULL, _IONBF, 0);             /* Schakel buffering uit */
   RC5_ResetPacket();                            /* RC5 pakket initialiseren */
+  __HAL_TIM_URS_ENABLE(&htim2);                /* Update interrupt ALLEEN bij overflow, niet bij slave reset */
   __HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);  /* Timeout interrupt aanzetten */
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);  /* CH1: dalende flank */
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);  /* CH2: stijgende flank */

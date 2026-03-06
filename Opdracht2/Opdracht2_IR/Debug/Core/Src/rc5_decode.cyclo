@@ -4,5 +4,5 @@
 ../Core/Src/rc5_decode.c:174:16:RC5_GetPulseLength	5
 ../Core/Src/rc5_decode.c:190:13:RC5_modifyLastBit	3
 ../Core/Src/rc5_decode.c:210:13:RC5_WriteBit	4
-../Core/Src/rc5_decode.c:249:6:HAL_TIM_IC_CaptureCallback	4
-../Core/Src/rc5_decode.c:273:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/rc5_decode.c:253:6:HAL_TIM_IC_CaptureCallback	5
+../Core/Src/rc5_decode.c:279:6:HAL_TIM_PeriodElapsedCallback	2

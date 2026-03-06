@@ -239,28 +239,34 @@ static void RC5_WriteBit(uint8_t bitVal)
 
 /* TIM2 Interrupt callbacks --------------------------------------------------*/
 
+/* Sla de laatste lage pulsduur op voor gebruik in de dalende flank berekening */
+static uint32_t last_low_pulse = 0;
+
 /**
   * @brief  HAL callback voor Input Capture events van TIM2.
   *         Wordt automatisch aangeroepen door de HAL bij elke flank op PA0.
   *
-  *         CH1 (dalende flank): leest CCR1 = totale periode (1T of 2T)
-  *         CH2 (stijgende flank): leest CCR2 = lage pulsduur
+  *         CH2 (stijgende flank): CCR2 = lage pulsduur (dalend->stijgend)
+  *         CH1 (dalende flank):   CCR1 = volledige periode (dalend->dalend)
+  *                                hoge pulsduur = CCR1 - CCR2
   */
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM2)
   {
-    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
+    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
     {
-      /* Dalende flank: CCR1 bevat de periode tussen twee dalende flanken */
-      uint32_t period = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-      RC5_DataSampling(period, 0);  /* edge = 0: dalende flank */
+      /* Stijgende flank: CCR2 = lage pulsduur → onmiddellijk verwerken */
+      last_low_pulse = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+      RC5_DataSampling(last_low_pulse, 1);  /* edge = 1: stijgende flank */
     }
-    else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
+    else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
     {
-      /* Stijgende flank: CCR2 bevat de duur van de lage puls */
-      uint32_t pulseWidth = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
-      RC5_DataSampling(pulseWidth, 1);  /* edge = 1: stijgende flank */
+      /* Dalende flank: CCR1 = volledige periode (dalend->dalend)
+       * Hoge pulsduur = periode - lage pulsduur */
+      uint32_t period     = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+      uint32_t high_pulse = (period > last_low_pulse) ? (period - last_low_pulse) : 0;
+      RC5_DataSampling(high_pulse, 0);  /* edge = 0: dalende flank */
     }
   }
 }
