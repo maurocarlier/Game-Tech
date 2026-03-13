@@ -61,6 +61,10 @@ uint32_t RC5ManchesterFrameFormat = 0;
 uint8_t RC5SendOpCompleteFlag = 0x01;  /* Start as complete so first send can proceed */
 uint8_t RC5SendOpReadyFlag = 0;
 uint32_t BitsSentCounter = 0;
+
+/* RC5 Toggle Bit State */
+static RC5_Ctrl_t RC5_Toggle_Bit = RC5_CTRL_RESET;
+static uint8_t Button_Previous_State = 1; // Active Low: 1 = released, 0 = pressed
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -127,16 +131,34 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    /* Check if button is pressed (Active LOW) */
+    /* Check Button State (Active LOW) */
     if (HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN) == GPIO_PIN_RESET)
     {
-      RC5_Send(0x10, 0x20);   // address, command
-      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET); // LED ON
-      HAL_Delay(200);         // Debounce and signal duration
+       /* Button is Pressed */
+       if (Button_Previous_State == 1) /* Was released, now pressed -> Toggle */
+       {
+           if (RC5_Toggle_Bit == RC5_CTRL_RESET)
+           {
+               RC5_Toggle_Bit = RC5_CTRL_SET;
+           }
+           else
+           {
+               RC5_Toggle_Bit = RC5_CTRL_RESET;
+           }
+           Button_Previous_State = 0; /* Mark as pressed */
+       }
+       
+       /* Send RC5 Frame with current Toggle Bit */
+       RC5_Encode_SendFrame(0x10, 0x20, RC5_Toggle_Bit);
+       
+       HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+       HAL_Delay(200); /* Delay for repeat interval and debounce */
     }
     else
     {
-       HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET); // LED OFF
+       /* Button is Released */
+       HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+       Button_Previous_State = 1; /* Mark as released */
     }
   }
   /* USER CODE END 3 */
